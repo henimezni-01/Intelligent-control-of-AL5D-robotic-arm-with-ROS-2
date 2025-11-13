@@ -1,0 +1,69 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 1000  # Hz
+
+    # Broadcasters et contrôleurs
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+     
+    arm_controller: 
+      type: joint_trajectory_controller/JointTrajectoryController
+      
+    gripper_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+
+# Configuration du contrôleur bras
+arm_controller:
+  ros__parameters:
+    joints:
+      - base_joint
+      - shoulder_joint
+      - elbow_joint
+      - wrist_1_joint
+      - wrist_2_joint 
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity 
+    # Dans controllers.yaml - Gains PID haute performance
+    # Dans controllers.yaml - Gains pour vitesse maximale
+    gains:
+      # Base - Réactivité extrême
+      base_joint: {p: 300.0, d: 1.0, i: 15.0, i_clamp: 250.0}
+      
+      # Épaule - Vitesse et puissance
+      shoulder_joint: {p: 350.0, d: 1.5, i: 20.0, i_clamp: 300.0}
+      
+      # Coude - Rapide et fluide
+      elbow_joint: {p: 280.0, d: 1.2, i: 18.0, i_clamp: 220.0}
+      
+      # Poignet 1 - Très rapide
+      wrist_1_joint: {p: 500.0, d: 0.8, i: 8.0, i_clamp: 100.0}
+      #wrist_1_joint: {p: 200.0, d: 0.8, i: 12.0, i_clamp: 18.0} 
+      #wrist_1_joint: {p: 200.0, d: 0.8, i: 12.0, i_clamp: 80.0}
+      
+      # Poignet 2 - Ultra-rapide
+      wrist_2_joint: {p: 180.0, d: 0.6, i: 10.0, i_clamp: 60.0}
+    #gains:
+      #base_joint: {p: 100.0, d: 1.0, i: 10.0, i_clamp: 100.0}
+      #shoulder_joint: {p: 150.0, d: 2.0, i: 15.0, i_clamp: 150.0}
+      #elbow_joint: {p: 120.0, d: 1.5, i: 12.0, i_clamp: 120.0}
+      #wrist_1_joint: {p: 80.0, d: 1.0, i: 8.0, i_clamp: 80.0}
+      #wrist_2_joint: {p: 60.0, d: 0.8, i: 6.0, i_clamp: 60.0}  
+    allow_nonzero_velocity_at_trajectory_end: true
+
+# Configuration du contrôleur pince - SEULEMENT le joint maître
+gripper_controller:
+  ros__parameters:
+    joints:
+      - gripper_left_joint  # Joint maître seulement
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
+    gains:
+      gripper_left_joint: {p: 400.0, d: 0.3, i: 25.0, i_clamp: 30.0}  
+    allow_nonzero_velocity_at_trajectory_end: true
